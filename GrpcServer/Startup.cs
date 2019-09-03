@@ -1,4 +1,5 @@
 using GrpcService.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,16 @@ namespace GrpcServer
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc(); // これと
+            // これと
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = "https://login.microsoftonline.com/テナントID/";
+                    options.Audience = "api://サーバーのアプリID";
+                });
+            services.AddAuthorization();
+
+            services.AddGrpc();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -23,9 +33,13 @@ namespace GrpcServer
 
             app.UseRouting();
 
+            // これを追加
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>(); // これを追加
+                endpoints.MapGrpcService<GreeterService>();
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Hello World!");
