@@ -4,6 +4,7 @@ option csharp_namespace = "GrpcSample";
 
 service Greeter {
     rpc Greet (GreetRequest) returns (GreetReply);
+    rpc GreetForAdmin (GreetRequest) returns (GreetReply);
 }
 
 message GreetRequest {

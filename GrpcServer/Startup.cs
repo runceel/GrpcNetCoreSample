@@ -12,14 +12,19 @@ namespace GrpcServer
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            // ã“ã‚Œã¨
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.Authority = "https://login.microsoftonline.com/ãƒ†ãƒŠãƒ³ãƒˆID/";
-                    options.Audience = "api://ã‚µãƒ¼ãƒãƒ¼ã®ã‚¢ãƒ—ãƒªID";
+                    options.Authority = "https://login.microsoftonline.com/ƒeƒiƒ“ƒg ID/";
+                    options.Audience = "api://ƒT[ƒo[‘¤ƒAƒvƒŠ‚ÌƒAƒvƒŠ ID";
                 });
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admins", policy => 
+                    //policy.RequireClaim("groups", "admins ƒOƒ‹[ƒv‚ÌƒIƒuƒWƒFƒNƒg ID")
+                    policy.RequireClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admins")
+                );
+            });
 
             services.AddGrpc();
         }
@@ -33,7 +38,6 @@ namespace GrpcServer
 
             app.UseRouting();
 
-            // ã“ã‚Œã‚’è¿½åŠ 
             app.UseAuthentication();
             app.UseAuthorization();
 

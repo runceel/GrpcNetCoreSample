@@ -16,5 +16,15 @@ namespace GrpcService.Services
                 Message = $"Hello {request.Name}, IsAuthorized: {identity.IsAuthenticated}, Your account is {identity.Name}",
             });
         }
+
+        [Authorize("Admins")]
+        public override Task<GreetReply> GreetForAdmin(GreetRequest request, ServerCallContext context)
+        {
+            var identity = context.GetHttpContext().User.Identity;
+            return Task.FromResult(new GreetReply
+            {
+                Message = $"Dear {request.Name}, IsAuthorized: {identity.IsAuthenticated}, Your account is {identity.Name}",
+            });
+        }
     }
 }
